@@ -79,18 +79,48 @@ new class extends Component {
                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                 @enderror
             </div>
+
+            <!-- Excerpt -->
+            <div>
+                <label for="excerpt" class="block text-sm font-medium text-gray-700">
+                    Excerpt
+                </label>
+                <textarea
+                    id="excerpt"
+                    wire:model="excerpt"
+                    placeholder="A short summary of your post (optional)"
+                    rows="2"
+                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                ></textarea>
+                @error('excerpt')
+                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
+                <p class="mt-1 text-sm text-gray-500">This will appear in post previews and search results</p>
+            </div>
+
             <!-- Content -->
             <div>
                 <label for="content" class="block text-sm font-medium text-gray-700">
                     Content
                 </label>
-                <div wire:ignore>
-                    <input type="hidden" name="content" id="x-content">
+                <div
+                    wire:ignore
+                    x-data="{
+                        content: $wire.entangle('content'),
+                    }"
+                    x-init="
+                        let editor = $refs.trixEditor.editor;
+                        editor.loadHTML(content);
+                        $refs.trixEditor.addEventListener('trix-change', function(e){
+                            content = e.target.value;
+                        });
+                    "
+                >
+                    <input id="x-content" type="hidden" name="content">
                     <trix-editor
                         input="x-content"
                         class="trix-content"
-                        x-data
-                        x-on:trix-change="$wire.content = $event.target.value"
+                        x-ref="trixEditor"
                     ></trix-editor>
                 </div>
 
@@ -121,8 +151,7 @@ new class extends Component {
 
                 @if ($featured_image)
                     <div class="mt-3" wire:transition>
-                        <img src="{{ $featured_image->temporaryUrl() }}"
-                             class="h-32 w-auto rounded border border-gray-300" alt="Preview">
+                        <img src="{{ $featured_image->temporaryUrl() }}" class="h-32 w-auto rounded border border-gray-300" alt="Preview">
                     </div>
                 @endif
 
@@ -130,6 +159,7 @@ new class extends Component {
                     Uploading...
                 </div>
             </div>
+
             <!-- Status -->
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">
@@ -159,8 +189,7 @@ new class extends Component {
                             />
                             <div class="ml-3">
                                 <span class="block text-sm font-medium text-gray-700">Published</span>
-                                <span
-                                    class="block text-sm text-gray-500">Publish immediately, visible to all readers</span>
+                                <span class="block text-sm text-gray-500">Publish immediately, visible to all readers</span>
                             </div>
                         </label>
                     @endcan

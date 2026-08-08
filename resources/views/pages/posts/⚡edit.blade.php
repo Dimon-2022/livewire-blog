@@ -1,10 +1,11 @@
 <?php
 
-use App\Models\Post;
 use Livewire\Component;
 use Livewire\WithFileUploads;
-
-new class extends Component {
+use App\Models\Post;
+use Livewire\Attributes\Validate;
+new class extends Component
+{
     use WithFileUploads;
 
     public Post $post;
@@ -25,6 +26,7 @@ new class extends Component {
     public string $status = '';
 
     public string $existing_image = '';
+
 
     public function mount(Post $post): void
     {
@@ -69,6 +71,7 @@ new class extends Component {
         }
 
         $this->post->save();
+
 
         session()->flash('success', 'Post updated successfully!');
 
@@ -251,5 +254,3 @@ new class extends Component {
     </form>
 </div>
 </div>
-
-

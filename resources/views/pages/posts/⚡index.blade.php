@@ -1,31 +1,31 @@
 <?php
 
-use App\Models\Post;
 use Livewire\Component;
+use App\Models\Post;
 use Livewire\WithPagination;
-
 new class extends Component {
-
     use WithPagination;
 
     public string $search = '';
     public string $status = 'all';
 
-    public function with()
+    public function with(): array
     {
-        $query = Post::with('user')->latest();
-
-        //filter by search
+        $query = Post::with(['user','categories','tags'])
+            ->withCount('comments')
+            ->latest();
+        // filter by search
         if ($this->search) {
-            $query->where('title', 'like', '%' . $this->search . '%')->orWhere('content', 'like', '%' . $this->search . '%');
+            $query->where('title', 'like', '%' . $this->search . '%')
+                ->orWhere('content', 'like', '%' . $this->search . '%');
         }
 
-        //filter by status
+        // filter by status
         if ($this->status !== 'all') {
             $query->where('status', $this->status);
         }
 
-        //Authorization: Authors can only see their own posts, while Admins can see all posts
+        // Authorization: Authors only see their own posts
         if (auth()->user()->hasRole('author')) {
             $query->where('user_id', auth()->id());
         }
@@ -47,14 +47,16 @@ new class extends Component {
 
     public function deletePost(Post $post)
     {
-        if(auth()->user()->can('delete all posts') || (auth()->user()->can('delete own posts') && $post->user_id === auth()->id())) {
+        // authorize
+        if (
+            auth()->user()->can('delete all posts')
+            || (auth()->user()->can('delete own posts') && $post->user_id === auth()->user()->id)
+        ) {
             $post->delete();
-            session()->flash('message', 'Post deleted successfully.');
-        } else {
-            session()->flash('error', 'You do not have permission to delete this post.');
+
+            session()->flash('success', 'Post deleted successfully!');
         }
     }
-
 };
 ?>
 
