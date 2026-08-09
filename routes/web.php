@@ -1,5 +1,6 @@
 <?php
 
+use App\Livewire\PostList;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome')->name('home');
@@ -7,6 +8,9 @@ Route::view('/', 'welcome')->name('home');
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::view('dashboard', 'dashboard')->name('dashboard');
 });
+
+Route::get('/blog', PostList::class)->name('blog.index');
+Route::livewire('/blog/{slug}', 'pages::posts.show')->name('blog.show');
 
 Route::middleware('auth')->group(function () {
     Route::livewire('/posts', 'pages::posts.index')->name('posts.index')->middleware('can:create posts');
