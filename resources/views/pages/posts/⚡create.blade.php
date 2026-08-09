@@ -98,29 +98,19 @@ new class extends Component {
                 <p class="mt-1 text-sm text-gray-500">This will appear in post previews and search results</p>
             </div>
 
-            <!-- Content -->
             <div>
                 <label for="content" class="block text-sm font-medium text-gray-700">
                     Content
                 </label>
-                <div
-                    wire:ignore
-                    x-data="{
-                        content: $wire.entangle('content'),
-                    }"
-                    x-init="
-                        let editor = $refs.trixEditor.editor;
-                        editor.loadHTML(content);
-                        $refs.trixEditor.addEventListener('trix-change', function(e){
-                            content = e.target.value;
-                        });
-                    "
-                >
-                    <input id="x-content" type="hidden" name="content">
+
+                <div wire:ignore>
+                    <input id="x-content" type="hidden">
+
                     <trix-editor
                         input="x-content"
                         class="trix-content"
-                        x-ref="trixEditor"
+                        x-data
+                        x-on:trix-change="$wire.set('content', $event.target.value)"
                     ></trix-editor>
                 </div>
 

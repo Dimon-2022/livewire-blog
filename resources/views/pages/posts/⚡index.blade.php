@@ -11,9 +11,8 @@ new class extends Component {
 
     public function with(): array
     {
-        $query = Post::with(['user','categories','tags'])
-            ->withCount('comments')
-            ->latest();
+
+        $query = Post::with('user')->latest();
         // filter by search
         if ($this->search) {
             $query->where('title', 'like', '%' . $this->search . '%')
@@ -147,20 +146,6 @@ new class extends Component {
                                         </span>
                                 </div>
                             @endif
-                        </td>
-                        <td class="px-6 py-4">
-                            <div class="flex flex-wrap gap-1">
-                                @forelse($post->categories as $category)
-                                    <span
-                                        class="px-2 py-1 text-xs font-semibold rounded-full text-white"
-                                        style="background-color: {{ $category->color }}"
-                                    >
-                                            {{ $category->name }}
-                                        </span>
-                                @empty
-                                    <span class="text-sm text-gray-400">No category</span>
-                                @endforelse
-                            </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="text-sm text-gray-900">{{ $post->user->name }}</div>
