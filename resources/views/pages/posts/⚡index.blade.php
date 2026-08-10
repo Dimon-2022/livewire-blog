@@ -12,7 +12,7 @@ new class extends Component {
     public function with(): array
     {
 
-        $query = Post::with('user')->latest();
+        $query = Post::with(['user', 'categories', 'tags'])->latest();
         // filter by search
         if ($this->search) {
             $query->where('title', 'like', '%' . $this->search . '%')
@@ -146,6 +146,15 @@ new class extends Component {
                                         </span>
                                 </div>
                             @endif
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex flex-wrap gap-1">
+                                @foreach($post->categories as $category)
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                        {{ $category->name }}
+                                    </span>
+                                @endforeach
+                            </div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="text-sm text-gray-900">{{ $post->user->name }}</div>
