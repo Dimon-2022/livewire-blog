@@ -25,6 +25,21 @@ Route::middleware('auth')->group(function () {
 
     Route::livewire('/users/{user}/edit', 'pages::users.edit')->middleware('can:manage users')->name('users.edit');
 
-require __DIR__.'/settings.php';
+    // Categories routes
+    Route::livewire('/categories', 'pages::categories.index')
+        ->middleware('can:manage roles')
+        ->name('categories.index');
+
+    Route::livewire('/categories/create', 'pages::categories.create')
+        ->middleware('can:manage roles')
+        ->name('categories.create');
+
+    Route::livewire('/categories/{category}/edit', 'pages::categories.edit')
+        ->middleware('can:manage roles')
+        ->name('categories.edit');
+    
+
+
+    require __DIR__.'/settings.php';
 });
 

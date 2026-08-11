@@ -29,6 +29,12 @@
                         </flux:sidebar.item>
                     @endcan
 
+                    @can('manage roles')
+                        <flux:sidebar.item icon="user-group" :href="route('categories.index')" :current="request()->routeIs('categories.index')" wire:navigate>
+                            {{ __('Categories') }}
+                        </flux:sidebar.item>
+                    @endcan
+
                 </flux:sidebar.group>
             </flux:sidebar.nav>
 
