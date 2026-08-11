@@ -12,7 +12,7 @@ new #[Layout('layouts.public')] class extends Component
     {
         $this->post = Post::where('slug', $slug)
             ->where('status', 'published')
-            ->with('user')
+            ->with(['user', 'categories', 'tags'])
             ->firstOrFail();
     }
 };
@@ -46,6 +46,48 @@ new #[Layout('layouts.public')] class extends Component
                     <p class="text-sm">{{ $post->published_at->format('F d, Y') }} • {{ ceil(str_word_count(strip_tags($post->content)) / 200) }} min read • {{ number_format($post->views_count) }} views</p>
                 </div>
             </div>
+
+        <!-- Categories and Tags -->
+        <div class="flex flex-wrap items-center gap-4 pt-4 border-t border-gray-200">
+            <!-- Categories -->
+            @if($post->categories->count() > 0)
+                <div class="flex items-center gap-2">
+                    <span class="text-sm font-medium text-gray-500">Categories:</span>
+                    <div class="flex flex-wrap gap-2">
+                        @foreach($post->categories as $category)
+                            <a
+                                href="{{ route('blog.index', ['category' => $category->slug]) }}"
+                                wire:navigate
+                                class="px-3 py-1 text-sm font-semibold rounded-full text-white hover:opacity-80 transition"
+                                style="background-color: {{ $category->color }}"
+                            >
+                                {{ $category->name }}
+                            </a>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
+            <!-- Tags -->
+            @if($post->tags->count() > 0)
+                <div class="flex items-center gap-2">
+                    <span class="text-sm font-medium text-gray-500">Tags:</span>
+                    <div class="flex flex-wrap gap-2">
+                        @foreach($post->tags as $tag)
+                            <a
+                                href="{{ route('blog.index', ['tag' => $tag->slug]) }}"
+                                wire:navigate
+                                class="text-sm text-indigo-600 hover:text-indigo-800"
+                            >
+                                #{{ $tag->name }}
+                            </a>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+        </div>
+
+
         <!-- Post Content -->
         <div class="prose prose-lg prose-indigo max-w-none mb-12">
             {!! $post->content !!}

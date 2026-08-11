@@ -16,8 +16,53 @@
                            class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
                 </div>
 
+                <!-- Categories -->
+                <div class="mb-6">
+                    <h3 class="text-sm font-medium text-gray-700 mb-3">Categories</h3>
+                    <div class="space-y-2">
+                        <button wire:click="$set('selectedCategory', '')"
+                                class="w-full text-left px-3 py-2 rounded-md text-sm {{ $selectedCategory === '' ? 'bg-indigo-50 text-indigo-700 font-medium' : 'text-gray-700 hover:bg-gray-50' }}">
+                            All Categories
+                        </button>
+                        @foreach($categories as $category)
+                            <button wire:click="$set('selectedCategory', '{{ $category->slug }}')"
+                                    class="w-full text-left px-3 py-2 rounded-md text-sm flex items-center justify-between {{ $selectedCategory === $category->slug ? 'bg-indigo-50 text-indigo-700 font-medium' : 'text-gray-700 hover:bg-gray-50' }}">
+                                <span class="flex items-center">
+                                    <span class="inline-block w-3 h-3 rounded-full mr-2"
+                                          style="background-color: {{ $category->color }}"></span>
+                                    {{ $category->name }}
+                                </span>
+                                <span class="text-xs text-gray-500">({{ $category->posts_count }})</span>
+                            </button>
+                        @endforeach
+                    </div>
+                </div>
 
+                <!-- Tags -->
+                <div class="mb-6">
+                    <h3 class="text-sm font-medium text-gray-700 mb-3">Tags</h3>
+                    <div class="flex flex-wrap gap-2">
+                        @foreach($tags as $tag)
+                            @if($tag->posts_count > 0)
+                                <button wire:click="$set('selectedTag', '{{ $tag->slug }}')"
+                                        class="px-3 py-1 rounded-full text-xs font-medium {{ $selectedTag === $tag->slug ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300' }}">
+                                    {{ $tag->name }} ({{ $tag->posts_count }})
+                                </button>
+                            @endif
+                        @endforeach
+                    </div>
+                </div>
 
+                <!-- Clear Filters -->
+                @if($search || $selectedCategory || $selectedTag)
+                    <button wire:click="clearFilters"
+                            class="w-full px-4 py-2 bg-gray-200 text-gray-700 rounded-md text-sm font-medium hover:bg-gray-300">
+                        Clear Filters
+                    </button>
+                @endif
+            </aside>
+
+            <div class="lg:col-span-3">
                 <!-- Posts Grid -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     @forelse($posts as $post)
