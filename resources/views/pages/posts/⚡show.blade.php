@@ -105,5 +105,7 @@ new #[Layout('layouts.public')] class extends Component
                 </div>
             </div>
         </footer>
+{{--        Comment section--}}
+        <livewire:blog.comments :post="$post" />
     </article>
 </div>

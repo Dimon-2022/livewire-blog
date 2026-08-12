@@ -35,6 +35,12 @@
                         </flux:sidebar.item>
                     @endcan
 
+                    @can('manage roles')
+                        <flux:sidebar.item icon="user-group" :href="route('comments.index')" :current="request()->routeIs('comments.index')" wire:navigate>
+                            {{ __('Comments') }}
+                        </flux:sidebar.item>
+                    @endcan
+
                 </flux:sidebar.group>
             </flux:sidebar.nav>
 

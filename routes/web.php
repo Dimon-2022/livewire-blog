@@ -37,8 +37,10 @@ Route::middleware('auth')->group(function () {
     Route::livewire('/categories/{category}/edit', 'pages::categories.edit')
         ->middleware('can:manage roles')
         ->name('categories.edit');
-    
 
+    Route::livewire('/comments', 'pages::comments.index')
+        ->middleware('can:create posts')
+        ->name('comments.index');
 
     require __DIR__.'/settings.php';
 });
