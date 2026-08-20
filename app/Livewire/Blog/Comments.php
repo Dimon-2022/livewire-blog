@@ -12,16 +12,15 @@ class Comments extends Component
     public Post $post;
 
     #[Validate('required|string|min:3|max:1000')]
-
     public string $newComment;
 
     public ?int $replyingTo = null;
 
     #[Validate('required|string|min:3|max:1000')]
-
     public string $replyContent = '';
 
-    public function mount(Post $post){
+    public function mount(Post $post)
+    {
         $this->post = $post;
     }
 
@@ -31,23 +30,31 @@ class Comments extends Component
             return redirect()->route('login');
         }
 
-            $this->validate();
+        $this->validate();
 
-            Comment::create([
-                'post_id' => $this->post->id,
-                'user_id' => auth()->id(),
-                'content' => $this->newComment,
-                'status' => 'approved',
-            ]);
+        $comment = Comment::create([
+            'post_id' => $this->post->id,
+            'user_id' => auth()->id(),
+            'content' => $this->newComment,
+            'status' => 'approved',
+        ]);
 
-            $this->newComment = '';
+        $this->newComment = '';
 
-            $this->dispatch('comment-posted');
+        //notify post author about new comment
 
-            session()->flash('comment-success', 'comment posted successfully!');
+        if($this->post->user_id != auth()->id()){
+            $this->post->user->notify(new \App\Notifications\NewCommentNotification($comment));
         }
 
-    public function startReply($commentId){
+
+        $this->dispatch('comment-posted');
+
+        session()->flash('comment-success', 'comment posted successfully!');
+    }
+
+    public function startReply($commentId)
+    {
 
         if (!auth()->check()) {
             return redirect()->route('login');
@@ -57,12 +64,14 @@ class Comments extends Component
         $this->replyContent = '';
     }
 
-    public function cancelReply(){
+    public function cancelReply()
+    {
         $this->replyingTo = null;
         $this->replyContent = '';
     }
 
-    public function postReply($parentId){
+    public function postReply($parentId)
+    {
 
         if (!auth()->check()) {
             return redirect()->route('login');
@@ -70,7 +79,7 @@ class Comments extends Component
 
         $this->validate(['replyContent' => 'required|string|min:3|max:1000']);
 
-        Comment::create([
+        $comment = Comment::create([
             'post_id' => $this->post->id,
             'user_id' => auth()->id(),
             'parent_id' => $parentId,
@@ -81,17 +90,22 @@ class Comments extends Component
         $this->replyingTo = null;
         $this->replyContent = '';
 
+        //notify post author
+
+        if($this->post->user_id != auth()->id()){
+            $this->post->user->notify(new \App\Notifications\NewCommentNotification($comment));
+        }
+
         $this->dispatch('comment-posted');
 
         session()->flash('comment-success', 'Reply posted successfully!');
     }
 
     #[On('comment-posted')]
-
     public function render()
     {
 
-    $comments = Comment::where('post_id', $this->post->id)->with('user', 'replies.user')->latest()->get();
+        $comments = Comment::where('post_id', $this->post->id)->with('user', 'replies.user')->latest()->get();
 
         return view('livewire.blog.comments', ['comments' => $comments]);
     }
