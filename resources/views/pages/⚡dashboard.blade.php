@@ -84,6 +84,7 @@ new class extends Component {
 ?>
 
 <div>
+    <x-slot name="title">{{ __('Dashboard') }}</x-slot>
     <div class="mb-6 flex items-center justify-between">
         <div class="mb-6">
             <h1 class="text-2xl font-bold text-gray-900">Dashboard</h1>

@@ -1,16 +1,26 @@
 <?php
 
 use App\Livewire\PostList;
+use App\Models\Subscriber;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome')->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::view('dashboard', 'dashboard')->name('dashboard');
+    Route::livewire('dashboard', 'pages::dashboard')->name('dashboard');
 });
 
 Route::get('/blog', PostList::class)->name('blog.index');
 Route::livewire('/blog/{slug}', 'pages::posts.show')->name('blog.show');
+
+Route::get('/unsubscribe/{token}', function ($token) {
+    $subscriber = Subscriber::where('token', $token)->first();
+    if($subscriber){
+        $subscriber->delete();
+        return view('unsubscribe');
+    }
+    abort(404);
+})->name('unsubscribe');
 
 Route::middleware('auth')->group(function () {
     Route::livewire('/posts', 'pages::posts.index')->name('posts.index')->middleware('can:create posts');
@@ -37,6 +47,19 @@ Route::middleware('auth')->group(function () {
     Route::livewire('/categories/{category}/edit', 'pages::categories.edit')
         ->middleware('can:manage roles')
         ->name('categories.edit');
+
+    // Tags routes
+    Route::livewire('/tags', 'pages::tags.index')
+        ->middleware('can:manage roles')
+        ->name('tags.index');
+
+    Route::livewire('/tags/create', 'pages::tags.create')
+        ->middleware('can:manage roles')
+        ->name('tags.create');
+
+    Route::livewire('/tags/{tag}/edit', 'pages::tags.edit')
+        ->middleware('can:manage roles')
+        ->name('tags.edit');
 
     Route::livewire('/comments', 'pages::comments.index')
         ->middleware('can:create posts')

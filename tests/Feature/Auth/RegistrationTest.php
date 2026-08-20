@@ -13,9 +13,10 @@ test('registration screen can be rendered', function () {
 });
 
 test('new users can register', function () {
+    $email = 'new-user-' . uniqid() . '@example.com';
     $response = $this->post(route('register.store'), [
         'name' => 'John Doe',
-        'email' => 'test@example.com',
+        'email' => $email,
         'password' => 'password',
         'password_confirmation' => 'password',
     ]);

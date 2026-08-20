@@ -124,5 +124,10 @@
         <div class="mt-8">
             {{ $posts->links() }}
         </div>
+
+        {{--subscribe section--}}
+        <div class="mt-12">
+            <livewire:blog.subscribe/>
+        </div>
     </div>
 </div>

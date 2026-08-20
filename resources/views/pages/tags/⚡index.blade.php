@@ -1,7 +1,7 @@
 <?php
 
 use Livewire\Component;
-use App\Models\Category;
+use App\Models\Tag;
 use Livewire\WithPagination;
 
 new class extends Component
@@ -12,15 +12,14 @@ new class extends Component
 
     public function with(): array
     {
-        $query = Category::withCount('posts')->latest();
+        $query = Tag::withCount('posts')->latest();
 
         if ($this->search) {
-            $query->where('name', 'like', '%' . $this->search . '%')
-                ->orWhere('description', 'like', '%' . $this->search . '%');
+            $query->where('name', 'like', '%' . $this->search . '%');
         }
 
         return [
-            'categories' => $query->paginate(10),
+            'tags' => $query->paginate(10),
         ];
     }
 
@@ -29,10 +28,10 @@ new class extends Component
         $this->resetPage();
     }
 
-    public function deleteCategory(Category $category)
+    public function deleteTag(Tag $tag)
     {
-        $category->delete();
-        session()->flash('success', 'Category deleted successfully!');
+        $tag->delete();
+        session()->flash('success', 'Tag deleted successfully!');
     }
 };
 ?>
@@ -40,23 +39,23 @@ new class extends Component
 <div>
     <div class="mb-6 flex items-center justify-between">
         <div>
-            <h1 class="text-2xl font-bold text-gray-900">Categories</h1>
-            <p class="mt-1 text-sm text-gray-600">Manage blog categories</p>
+            <h1 class="text-2xl font-bold text-gray-900">Tags</h1>
+            <p class="mt-1 text-sm text-gray-600">Manage blog tags</p>
         </div>
         @can('manage roles')
-            <a href="{{ route('categories.create') }}"
+            <a href="{{ route('tags.create') }}"
                class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                 </svg>
-                New Category
+                New Tag
             </a>
         @endcan
     </div>
 
     {{-- Filters --}}
     <div class="mb-6 bg-white rounded-lg border border-gray-200 p-4">
-        <input type="text" wire:model.live.debounce.300ms="search" placeholder="Search categories..."
+        <input type="text" wire:model.live.debounce.300ms="search" placeholder="Search tags..."
                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
     </div>
 
@@ -67,7 +66,7 @@ new class extends Component
         </div>
     @endif
 
-    {{-- Categories Table --}}
+    {{-- Tags Table --}}
     <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200">
@@ -80,26 +79,23 @@ new class extends Component
                 </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
-                @foreach ($categories as $category)
-                    <tr wire:key="{{ $category->id }}">
+                @foreach ($tags as $tag)
+                    <tr wire:key="{{ $tag->id }}">
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="flex items-center">
-                                <div class="w-3 h-3 rounded-full mr-2" style="background-color: {{ $category->color ?? '#CBD5E0' }}"></div>
-                                <div class="text-sm font-medium text-gray-900">{{ $category->name }}</div>
-                            </div>
+                            <div class="text-sm font-medium text-gray-900">{{ $tag->name }}</div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {{ $category->slug }}
+                            {{ $tag->slug }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {{ $category->posts_count }}
+                            {{ $tag->posts_count }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                             <div class="flex justify-end gap-2">
-                                <a href="{{ route('categories.edit', $category) }}" class="text-indigo-600 hover:text-indigo-900">Edit</a>
+                                <a href="{{ route('tags.edit', $tag) }}" class="text-indigo-600 hover:text-indigo-900">Edit</a>
                                 <button
-                                    wire:click="deleteCategory({{ $category->id }})"
-                                    wire:confirm="Are you sure you want to delete this category?"
+                                    wire:click="deleteTag({{ $tag->id }})"
+                                    wire:confirm="Are you sure you want to delete this tag?"
                                     class="text-red-600 hover:text-red-900"
                                 >
                                     Delete
@@ -111,9 +107,9 @@ new class extends Component
                 </tbody>
             </table>
         </div>
-        @if ($categories->hasPages())
+        @if ($tags->hasPages())
             <div class="px-6 py-4 border-t border-gray-200">
-                {{ $categories->links() }}
+                {{ $tags->links() }}
             </div>
         @endif
     </div>

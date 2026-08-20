@@ -53,7 +53,7 @@ new class extends Component {
 
         // Load existing categories and tags
         $this->selectedCategories = $post->categories->pluck('id')->toArray();
-        $this->selectedTags = $post->tags->pluck('id')->toArray(
+        $this->selectedTags = $post->tags->pluck('id')->toArray();
     }
 
     public function with(): array
